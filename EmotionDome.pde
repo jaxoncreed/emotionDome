@@ -11,6 +11,7 @@ import netP5.*;
 
 public float cogLeft = 0;
 public float cogRight = 0;
+public boolean blinking = false;
 int circleX = 240;
 
 OscP5 oscP5;
@@ -26,7 +27,11 @@ void setup() {
 }
 
 void draw() {
-  background(0);
+  if (blinking) {
+    background(255, 255, 255);
+  } else {
+    background(0); 
+  }
   
   // draw graph ticks
   int i;
@@ -65,11 +70,15 @@ void drawBarGraph(float cogVal, int barY) {
 }
 
 void oscEvent(OscMessage theOscMessage) {
+  // This will tell you what the pattern is
+  // println(theOscMessage.addrPattern());
   // check if theOscMessage has an address pattern we are looking for
   if(theOscMessage.checkAddrPattern("/COG/LEFT") == true) {
     // parse theOscMessage and extract the values from the OSC message arguments
     cogLeft = theOscMessage.get(0).floatValue();
   } else if (theOscMessage.checkAddrPattern("/COG/RIGHT") == true) {
     cogRight = theOscMessage.get(0).floatValue();
+  } else if (theOscMessage.checkAddrPattern("/EXP/BLINK") == true) {
+    blinking = (float) theOscMessage.arguments()[0] == 1.0;
   }
 }
